@@ -4,6 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Fishing Game</title>
+  <!-- Google Font para sa fishing theme (gamitin ang "Pacifico") -->
+  <link href="https://fonts.googleapis.com/css?family=Pacifico&display=swap" rel="stylesheet">
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -12,9 +14,68 @@
       padding: 0;
     }
 
+    /* Main Screen Styles */
+    #mainScreen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100vh;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      color: white;
+      text-align: center;
+    }
+
+    /* Video background styling */
+    #bgVideo {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      min-width: 100%;
+      min-height: 100%;
+      width: auto;
+      height: auto;
+      z-index: -1;
+      transform: translate(-50%, -50%);
+      filter: brightness(50%);
+    }
+
+    #mainScreen h1 {
+      font-family: 'Pacifico', cursive;
+      font-size: 64px;
+      margin-bottom: 40px;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.7);
+    }
+
+    .mainButton {
+      padding: 15px 30px;
+      font-size: 18px;
+      margin: 10px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    #startFishing {
+      background-color: #ff4500;
+      color: white;
+    }
+
+    #connectWallet {
+      background-color: #4CAF50;
+      color: white;
+    }
+
+    /* Game Container Styles */
     #game {
       width: 80%;
       margin: 30px auto;
+      display: none; /* Naka-hidden hanggang pindutin ang "Start Fishing" */
     }
 
     #map {
@@ -75,7 +136,7 @@
       width: 100%;
     }
 
-    /* Boat selection style (gaya sa rod selection) */
+    /* Boat selection style (gaya ng rod selection) */
     #chooseBoat {
       padding: 10px 15px;
       font-size: 14px;
@@ -126,13 +187,6 @@
       border-radius: 5px;
     }
 
-    #message {
-      font-size: 18px;
-      font-weight: bold;
-      color: white;
-      text-align: center;
-    }
-
     /* Pop-up window styles */
     #popup {
       display: none;
@@ -145,6 +199,7 @@
       border-radius: 10px;
       text-align: center;
       color: white;
+      z-index: 2000;
     }
 
     #popup img {
@@ -178,6 +233,19 @@
   </style>
 </head>
 <body>
+  <!-- Main Screen with video background -->
+  <div id="mainScreen">
+    <!-- Video element; palitan ang src ng tamang URL ng iyong video -->
+    <video autoplay muted loop id="bgVideo">
+      <source src="https://imgur.com/3MwGNit.mp4" type="video/mp4">
+      Your browser does not support HTML5 video.
+    </video>
+    <h1>RUGGYFISH</h1>
+    <button id="startFishing" class="mainButton">Start Fishing</button>
+    <button id="connectWallet" class="mainButton">Connect Wallet</button>
+  </div>
+
+  <!-- Game Container -->
   <div id="game">
     <!-- Map Section with Fishing Spots -->
     <div id="map">
@@ -251,7 +319,26 @@
   </div>
 
   <script>
-    // Fish catch probabilities and names with corresponding points
+    /* --- Main Screen Functionality --- */
+    // Kapag pinindot ang "Start Fishing", itatago ang main screen at ipapakita ang game container.
+    document.getElementById('startFishing').addEventListener('click', function() {
+      document.getElementById('mainScreen').style.display = 'none';
+      document.getElementById('game').style.display = 'block';
+    });
+
+    // Placeholder para sa wallet connection.
+    document.getElementById('connectWallet').addEventListener('click', function() {
+      connectWallet();
+    });
+
+    // Dummy function para sa wallet connection (i-integrate dito ang aktwal na Telegram crypto wallet API kung available)
+    function connectWallet() {
+      alert('Connecting to your crypto wallet...');
+      document.getElementById('connectWallet').textContent = 'Wallet Connected';
+    }
+
+    /* --- Fishing Game Functionality --- */
+    // Fish catch probabilities and details
     const fishTypes = [
       { name: 'Red Tilapia', rarity: 'Common', chance: 50, points: 10, image: 'https://imgur.com/9kbKj0u.jpg' },
       { name: 'Snapper', rarity: 'Uncommon', chance: 30, points: 20, image: 'https://imgur.com/abOOJH7.jpg' },
@@ -260,23 +347,22 @@
       { name: 'Whale', rarity: 'Unique', chance: 5, points: 100, image: 'https://imgur.com/LoVkdcp.jpg' }
     ];
 
-    let totalPoints = 0; // Variable to track total points
-    let castingLimit = 20; // Limit for casting line
-    let energy = 20; // Starting energy
-    let castingUsed = 0; // Counter for casts used
+    let totalPoints = 0;      
+    let castingLimit = 20;    
+    let energy = 20;          
+    let castingUsed = 0;      
 
-    // Fish catch logic
+    // Function para pumili ng random fish
     function getRandomFish() {
       let randomChance = Math.random() * 100;
       let cumulativeChance = 0;
-
       for (const fish of fishTypes) {
         cumulativeChance += fish.chance;
         if (randomChance < cumulativeChance) {
           return fish;
         }
       }
-      return null; // In case no fish is caught, though it shouldn't happen
+      return null;
     }
 
     // Update points display
@@ -289,25 +375,21 @@
       document.getElementById('energy').textContent = energy;
     }
 
-    // Regenerate energy every 1 hour
+    // Regenerate energy every 1 hour (3600000 ms)
     setInterval(function() {
       if (energy < 20) {
-        energy += 1; // Regenerate 1 point of energy every hour
+        energy += 1;
         updateEnergy();
       }
-    }, 3600000); // 1 hour = 3600000 milliseconds
+    }, 3600000);
 
     // Handle area button clicks
     document.querySelectorAll('.areaBtn').forEach(button => {
       button.addEventListener('click', function() {
-        const area = this.id; // Get the area clicked (e.g., 'area1')
-
-        // Change fishing spot image depending on area selected
+        const area = this.id;
         const fishingSpotImage = document.getElementById('fishingSpotImage');
-        fishingSpotImage.src = `https://imgur.com/TPxAbRB.jpg`; // Example image change per area
-
-        // Update message (if needed, you can add a dedicated element for messages)
-        // document.getElementById('message').textContent = `You selected ${area.toUpperCase()}. Cast your line to catch a fish!`;
+        // Halimbawa: baguhin ang imahe base sa area (dito pareho lang ang ginagamit)
+        fishingSpotImage.src = 'https://imgur.com/TPxAbRB.jpg';
       });
     });
 
@@ -324,20 +406,17 @@
         listItem.textContent = `Caught a ${fishCaught.name} (${fishCaught.rarity}) - Points: ${fishCaught.points}`;
         caughtList.appendChild(listItem);
 
-        // Update total points
         totalPoints += fishCaught.points;
         updatePoints();
 
-        // Update catch message
         document.getElementById('catchMessage').textContent = `You caught a ${fishCaught.name}! (Rarity: ${fishCaught.rarity})`;
 
-        // Show pop-up with fish image and message
         document.getElementById('popupMessage').textContent = `You caught a ${fishCaught.name}!`;
         document.getElementById('popupImage').src = fishCaught.image;
         document.getElementById('popup').style.display = 'block';
 
         castingUsed++;
-        energy--; // Decrease energy by 1 after each cast
+        energy--;
         updateEnergy();
       } else {
         alert('Not enough energy! Please wait for energy regeneration.');
