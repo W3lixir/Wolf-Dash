@@ -1,241 +1,330 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-	<script src="https://telegram.org/js/games.js"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Horse Racing RNG Game</title>
+    <title>Fishing Game</title>
     <style>
         body {
             font-family: Arial, sans-serif;
-            text-align: center;
-            background-image: url('https://imgur.com/eE4HDu1.jpg');
-            background-size: cover;
-            background-repeat: no-repeat;
-            background-position: center;
-            color: white;
+            background-color: #e0f7fa;
+            margin: 0;
+            padding: 0;
         }
 
-        .track-container {
-            position: relative;
+        #game {
             width: 80%;
-            height: 200px;
-            margin: 20px auto;
+            margin: 30px auto;
         }
 
-        /* Starting line (vertical red line on the left) */
-        .starting-line {
-            position: absolute;
-            left: 0; /* Starting line at the left edge */
-            top: 0;
-            width: 5px;
-            height: 100%;
-            background-color: red;
-        }
-
-        /* Finish line (vertical green line on the right) */
-        .finish-line {
-            position: absolute;
-            right: 0; /* Finish line at the right edge */
-            top: 0;
-            width: 5px;
-            height: 100%;
-            background-color: green;
-        }
-
-        /* Track for the horses */
-        .track {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            width: 100%;
+        #map {
+            background-color: #8bc34a;
+            height: 400px;
             position: relative;
+            margin-bottom: 20px;
+            border-radius: 10px;
         }
 
-
-        .horse {
-            display: flex;
-            align-items: center;
-            justify-content: flex-start;
-            height: 25px;
-            width: 100%;
-            position: relative;
-            border-radius: 5px;
-            overflow: hidden;
-        }
-
-        .horse img {
-            height: 25px;
+        .areaBtn {
             position: absolute;
-            left: 0;
-        }
-
-        #startBtn {
-            padding: 10px 20px;
-            font-size: 16px;
-            background: #007bff;
+            padding: 10px 15px;
+            font-size: 14px;
+            cursor: pointer;
+            background-color: #4CAF50;
             color: white;
             border: none;
             border-radius: 5px;
-            cursor: pointer;
         }
 
-        #startBtn:disabled {
-            background: #aaa;
-            cursor: not-allowed;
+        #area1 { top: 250px; left: 20px; }
+        #area2 { top: 180px; left: 60px; }
+        #area3 { top: 100px; left: 180px; }
+        #area4 { top: 280px; left: 300px; }
+        #area5 { top: 300px; left: 150px; }
+
+        #fishingSpotImage {
+            width: 40%;
         }
 
-        h1, p {
-            margin: 10px 0;
+        #fisherman {
+            margin-top: 20px;
+            text-align: center;
         }
 
-        #winner {
+        #inventory {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        #fishingSpot {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        #catchHistory {
+            margin-top: 30px;
+        }
+
+        #catchHistory ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        #catchHistory li {
+            background-color: #f1f1f1;
+            margin: 5px 0;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        #message {
+            font-size: 18px;
             font-weight: bold;
-            margin-top: 20px;
+            color: #2c6b2f;
+            text-align: center;
         }
 
-        .bet-options {
-            margin-top: 20px;
+        /* Pop-up window styles */
+        #popup {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            color: white;
         }
 
-        .bet-btn {
-            padding: 8px 16px;
-            font-size: 8px;
-            background-color: #28a745;
+        #popup img {
+            max-width: 100%;
+            max-height: 200px;
+        }
+
+        #popup button {
+            margin-top: 10px;
+            padding: 10px 20px;
+            background-color: #4CAF50;
             color: white;
             border: none;
-            border-radius: 8px;
+            border-radius: 5px;
             cursor: pointer;
         }
 
-        .bet-btn:disabled {
-            background-color: #aaa;
-            cursor: not-allowed;
+        #popup button:hover {
+            background-color: #45a049;
         }
 
-        .bet-info {
-            margin-top: 20px;
+        /* Positioning for total points in the lower section */
+        #pointsSection {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            font-size: 18px;
+            font-weight: bold;
+            color: #2c6b2f;
+        }
+
+        /* New scrollable "Choose Rod" dropdown style */
+        #chooseRod {
+            padding: 10px 15px;
+            font-size: 14px;
+            cursor: pointer;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            width: 100%;
+        }
+
+        #chooseRod select {
+            padding: 10px;
+            width: 100%;
+        }
+
+        #swapButton {
+            margin-top: 10px;
+            padding: 10px 20px;
+            background-color: #f44336;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        #swapButton:hover {
+            background-color: #e53935;
         }
     </style>
 </head>
 <body>
-    <h1>Horse Racing RNG Game</h1>
-    <p>Pick a horse and see if it wins the race!</p>
-     color: white;
 
-    <!-- Bet Options -->
-    <div class="bet-options">
-        <p>Place your bet:</p>
-        <button class="bet-btn" id="betHorse1">Bless on Horse 1</button>
-        <button class="bet-btn" id="betHorse2">Bless on Horse 2</button>
-        <button class="bet-btn" id="betHorse3">Bless on Horse 3</button>
-        <button class="bet-btn" id="betHorse4">Bless on Horse 4</button>
-        <button class="bet-btn" id="betHorse5">Bless on Horse 5</button>
-        <button class="bet-btn" id="betHorse6">Bless on Horse 6</button>
-        <button class="bet-btn" id="betHorse7">Bless on Horse 7</button>
-        <button class="bet-btn" id="betHorse8">Bless on Horse 8</button>
-        <button class="bet-btn" id="betHorse9">Bless on Horse 9</button>
-        <button class="bet-btn" id="betHorse10">Bless on Horse 10</button>
-        <button class="bet-btn" id="betHorse11">Bless on Horse 11</button>
-        <button class="bet-btn" id="betHorse12">Bless on Horse 12</button>
+<div id="game">
+    <!-- Map Section with Fishing Spots -->
+    <div id="map">
+        <p>Click on an area to choose a fishing spot.</p>
+        <button class="areaBtn" id="area1">Area 1</button>
+        <button class="areaBtn" id="area2">Area 2</button>
+        <button class="areaBtn" id="area3">Area 3</button>
+        <button class="areaBtn" id="area4">Area 4</button>
+        <button class="areaBtn" id="area5">Area 5</button>
+        <!-- Display fishing spot image -->
+        <img id="fishingSpotImage" src="https://imgur.com/TPxAbRB.jpg" alt="Fishing Spot" width="40%" />
     </div>
 
-    <div class="track">
-        <div class="horse" id="horse1"><img src="https://imgur.com/VEYIKcq.gif" alt="Horse 1"></div>
-        <div class="horse" id="horse2"><img src="https://imgur.com/VEYIKcq.gif" alt="Horse 2"></div>
-        <div class="horse" id="horse3"><img src="https://imgur.com/VEYIKcq.gif" alt="Horse 3"></div>
-        <div class="horse" id="horse4"><img src="https://imgur.com/VEYIKcq.gif" alt="Horse 4"></div>
-        <div class="horse" id="horse5"><img src="https://imgur.com/VEYIKcq.gif" alt="Horse 5"></div>
-        <div class="horse" id="horse6"><img src="https://imgur.com/VEYIKcq.gif" alt="Horse 6"></div>
-        <div class="horse" id="horse7"><img src="https://imgur.com/VEYIKcq.gif" alt="Horse 7"></div>
-        <div class="horse" id="horse8"><img src="https://imgur.com/VEYIKcq.gif" alt="Horse 8"></div>
-        <div class="horse" id="horse9"><img src="https://imgur.com/VEYIKcq.gif" alt="Horse 9"></div>
-        <div class="horse" id="horse10"><img src="https://imgur.com/VEYIKcq.gif" alt="Horse 10"></div>
-        <div class="horse" id="horse11"><img src="https://imgur.com/VEYIKcq.gif" alt="Horse 11"></div>
-        <div class="horse" id="horse12"><img src="https://imgur.com/VEYIKcq.gif" alt="Horse 12"></div>
+    <!-- Fisherman Section -->
+    <div id="fisherman">
+        <img id="fishermanImage" src="https://imgur.com/b9lcmhW.jpg" alt="Fisherman" width="150" />
     </div>
 
-    <button id="startBtn">Start Race</button>
+    <!-- Inventory Section -->
+    <div id="inventory">
+        <div id="chooseRod">
+            <select>
+                <option value="rod1">Rod 1</option>
+                <option value="rod2">Rod 2</option>
+                <option value="rod3">Rod 3</option>
+            </select>
+        </div>
+        <button id="useBoat">Use Boat</button>
+    </div>
 
-    <h2 id="winner"></h2>
+    <!-- Fishing Spot Section -->
+    <div id="fishingSpot">
+        <button id="castLine">Cast Line</button>
+        <p id="catchMessage">Fish will appear here.</p>
+    </div>
 
-    <div class="bet-info" id="betInfo"></div>
+    <!-- Fish Catch History Section -->
+    <div id="catchHistory">
+        <h3>Fish Caught:</h3>
+        <ul id="caughtList">
+            <!-- List of caught fish will appear here -->
+        </ul>
+    </div>
 
-    <script>
-        const horses = document.querySelectorAll('.horse');
-        const startBtn = document.getElementById('startBtn');
-        const winnerDisplay = document.getElementById('winner');
-        const betInfo = document.getElementById('betInfo');
-        const betButtons = document.querySelectorAll('.bet-btn');
+    <!-- Swap Button -->
+    <div>
+        <button id="swapButton">Swap!</button>
+    </div>
+</div>
 
-        let userBet = null;
+<!-- Current Points Section (Bottom Left Corner) -->
+<div id="pointsSection">
+    <h3>Total Points: <span id="totalPoints">0</span></h3>
+    <h3>Energy: <span id="energy">20</span></h3>
+</div>
 
-        // Function to disable all bet buttons
-        function disableBetButtons() {
-            betButtons.forEach(button => {
-                button.disabled = true;
-            });
-        }
+<!-- Pop-up window -->
+<div id="popup">
+    <h3>Congratulations!</h3>
+    <p id="popupMessage">You caught a fish!</p>
+    <img id="popupImage" src="" alt="Fish Image">
+    <button onclick="closePopup()">Close</button>
+</div>
 
-        // Function to reset the race
-        function resetRace() {
-            horses.forEach(horse => {
-                horse.style.transform = 'translateX(0)';
-            });
-            winnerDisplay.textContent = '';
-            betInfo.textContent = '';
-        }
+<script>
+    // Fish catch probabilities and names with corresponding points
+    const fishTypes = [
+        { name: 'Red Tilapia', rarity: 'Common', chance: 50, points: 10, image: 'https://imgur.com/9kbKj0u.jpg' },
+        { name: 'Snapper', rarity: 'Uncommon', chance: 30, points: 20, image: 'https://imgur.com/abOOJH7.jpg' },
+        { name: 'Yellow Fin', rarity: 'Rare', chance: 20, points: 30, image: 'https://imgur.com/3HnUHmm.jpg' },
+        { name: 'Shark', rarity: 'Very Rare', chance: 10, points: 50, image: 'https://imgur.com/ZreE4Q6.jpg' },
+        { name: 'Whale', rarity: 'Unique', chance: 5, points: 100, image: 'https://imgur.com/LoVkdcp.jpg' }
+    ];
 
-        // Function to start the race
-        function startRace() {
-            if (!userBet) {
-                winnerDisplay.textContent = "Please place your bet before starting the race.";
-                return;
+    let totalPoints = 0; // Variable to track total points
+    let castingLimit = 20; // Limit for casting line
+    let energy = 20; // Starting energy
+    let castingUsed = 0; // Counter for casts used
+
+    // Fish catch logic
+    function getRandomFish() {
+        let randomChance = Math.random() * 100;
+        let cumulativeChance = 0;
+
+        for (const fish of fishTypes) {
+            cumulativeChance += fish.chance;
+            if (randomChance < cumulativeChance) {
+                return fish;
             }
-
-            resetRace();
-            startBtn.disabled = true;
-            let finished = false;
-
-            // Set random positions for horses
-            horses.forEach(horse => {
-                const distance = Math.random() * (90 - 80) + 80; // Random final position (80% to 90% of track)
-                const duration = Math.random() * (60 - 50) + 50; // Random time (50 to 60 seconds)
-
-                horse.style.transition = `${duration}s linear`;
-                horse.style.transform = `translateX(${distance}%)`;
-
-                setTimeout(() => {
-                    if (!finished) {
-                        finished = true;
-                        const winnerHorse = horse.querySelector('img').alt;
-                        winnerDisplay.textContent = `${winnerHorse} wins the race! 🏆`;
-
-                        // Check if the player's bet matches the winning horse
-                        if (winnerHorse === userBet) {
-                            winnerDisplay.textContent += " 🎉 Congratulations! You won!";
-                        } else {
-                            winnerDisplay.textContent += " Better luck next time!";
-                        }
-
-                        // Enable the start button again
-                        startBtn.disabled = false;
-                    }
-                }, duration * 1000);
-            });
         }
+        return null; // In case no fish is caught, though it shouldn't happen
+    }
 
-        // Add event listeners for bet buttons
-        betButtons.forEach(button => {
-            button.addEventListener('click', () => {
-                userBet = button.id.replace('betHorse', 'Horse '); // Extract horse number from button id
-                betInfo.textContent = `You have placed a bet on ${userBet}.`;
-                disableBetButtons(); // Disable all bet buttons once the bet is placed
-            });
+    // Update points display
+    function updatePoints() {
+        document.getElementById('totalPoints').textContent = totalPoints;
+    }
+
+    // Update energy display
+    function updateEnergy() {
+        document.getElementById('energy').textContent = energy;
+    }
+
+    // Regenerate energy every 1 hour
+    setInterval(function() {
+        if (energy < 20) {
+            energy += 1; // Regenerate 1 point of energy every hour
+            updateEnergy();
+        }
+    }, 3600000); // 1 hour = 3600000 milliseconds
+
+    // Handle area button clicks
+    document.querySelectorAll('.areaBtn').forEach(button => {
+        button.addEventListener('click', function() {
+            const area = this.id; // Get the area clicked (e.g., 'area1')
+
+            // Change fishing spot image depending on area selected
+            const fishingSpotImage = document.getElementById('fishingSpotImage');
+            fishingSpotImage.src = `https://imgur.com/TPxAbRB.jpg`; // Example image change per area (can be dynamic based on area)
+
+            // Update message
+            document.getElementById('message').textContent = `You selected ${area.toUpperCase()}. Cast your line to catch a fish!`;
         });
+    });
 
-        // Event listener for the Start Race button
-        startBtn.addEventListener('click', startRace);
-    </script>
+    // Handle casting the line
+    document.getElementById('castLine').addEventListener('click', function() {
+        if (castingUsed >= castingLimit) {
+            alert('Casting limit reached! Please wait for energy regeneration.');
+            return;
+        }
+        if (energy > 0) {
+            const fishCaught = getRandomFish();
+            const caughtList = document.getElementById('caughtList');
+            const listItem = document.createElement('li');
+            listItem.textContent = `Caught a ${fishCaught.name} (${fishCaught.rarity}) - Points: ${fishCaught.points}`;
+            caughtList.appendChild(listItem);
+
+            // Update total points
+            totalPoints += fishCaught.points;
+            updatePoints();
+
+            // Update catch message
+            document.getElementById('catchMessage').textContent = `You caught a ${fishCaught.name}! (Rarity: ${fishCaught.rarity})`;
+
+            // Show pop-up with fish image and message
+            document.getElementById('popupMessage').textContent = `You caught a ${fishCaught.name}!`;
+            document.getElementById('popupImage').src = fishCaught.image;
+            document.getElementById('popup').style.display = 'block';
+
+            castingUsed++;
+            energy--; // Decrease energy by 1 after each cast
+            updateEnergy();
+        } else {
+            alert('Not enough energy! Please wait for energy regeneration.');
+        }
+    });
+
+    // Function to close the pop-up
+    function closePopup() {
+        document.getElementById('popup').style.display = 'none';
+    }
+</script>
+
 </body>
 </html>
