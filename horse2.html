@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<script src="https://telegram.org/js/games.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Horse Racing RNG Game</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-image: url('https://imgur.com/eE4HDu1.jpg');
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-position: center;
+            color: white;
+        }
+
+        .track-container {
+            position: relative;
+            width: 80%;
+            height: 200px;
+            margin: 20px auto;
+        }
+
+        /* Starting line (vertical red line on the left) */
+        .starting-line {
+            position: absolute;
+            left: 0; /* Starting line at the left edge */
+            top: 0;
+            width: 5px;
+            height: 100%;
+            background-color: red;
+        }
+
+        /* Finish line (vertical green line on the right) */
+        .finish-line {
+            position: absolute;
+            right: 0; /* Finish line at the right edge */
+            top: 0;
+            width: 5px;
+            height: 100%;
+            background-color: green;
+        }
+
+        /* Track for the horses */
+        .track {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            width: 100%;
+            position: relative;
+        }
+
+
+        .horse {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            height: 25px;
+            width: 100%;
+            position: relative;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        .horse img {
+            height: 25px;
+            position: absolute;
+            left: 0;
+        }
+
+        #startBtn {
+            padding: 10px 20px;
+            font-size: 16px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        #startBtn:disabled {
+            background: #aaa;
+            cursor: not-allowed;
+        }
+
+        h1, p {
+            margin: 10px 0;
+        }
+
+        #winner {
+            font-weight: bold;
+            margin-top: 20px;
+        }
+
+        .bet-options {
+            margin-top: 20px;
+        }
+
+        .bet-btn {
+            padding: 8px 16px;
+            font-size: 8px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .bet-btn:disabled {
+            background-color: #aaa;
+            cursor: not-allowed;
+        }
+
+        .bet-info {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Horse Racing RNG Game</h1>
+    <p>Pick a horse and see if it wins the race!</p>
+     color: white;
+
+    <!-- Bet Options -->
+    <div class="bet-options">
+        <p>Place your bet:</p>
+        <button class="bet-btn" id="betHorse1">Bless on Horse 1</button>
+        <button class="bet-btn" id="betHorse2">Bless on Horse 2</button>
+        <button class="bet-btn" id="betHorse3">Bless on Horse 3</button>
+        <button class="bet-btn" id="betHorse4">Bless on Horse 4</button>
+        <button class="bet-btn" id="betHorse5">Bless on Horse 5</button>
+        <button class="bet-btn" id="betHorse6">Bless on Horse 6</button>
+        <button class="bet-btn" id="betHorse7">Bless on Horse 7</button>
+        <button class="bet-btn" id="betHorse8">Bless on Horse 8</button>
+        <button class="bet-btn" id="betHorse9">Bless on Horse 9</button>
+        <button class="bet-btn" id="betHorse10">Bless on Horse 10</button>
+        <button class="bet-btn" id="betHorse11">Bless on Horse 11</button>
+        <button class="bet-btn" id="betHorse12">Bless on Horse 12</button>
+    </div>
+
+    <div class="track">
+        <div class="horse" id="horse1"><img src="https://imgur.com/VEYIKcq.gif" alt="Horse 1"></div>
+        <div class="horse" id="horse2"><img src="https://imgur.com/VEYIKcq.gif" alt="Horse 2"></div>
+        <div class="horse" id="horse3"><img src="https://imgur.com/VEYIKcq.gif" alt="Horse 3"></div>
+        <div class="horse" id="horse4"><img src="https://imgur.com/VEYIKcq.gif" alt="Horse 4"></div>
+        <div class="horse" id="horse5"><img src="https://imgur.com/VEYIKcq.gif" alt="Horse 5"></div>
+        <div class="horse" id="horse6"><img src="https://imgur.com/VEYIKcq.gif" alt="Horse 6"></div>
+        <div class="horse" id="horse7"><img src="https://imgur.com/VEYIKcq.gif" alt="Horse 7"></div>
+        <div class="horse" id="horse8"><img src="https://imgur.com/VEYIKcq.gif" alt="Horse 8"></div>
+        <div class="horse" id="horse9"><img src="https://imgur.com/VEYIKcq.gif" alt="Horse 9"></div>
+        <div class="horse" id="horse10"><img src="https://imgur.com/VEYIKcq.gif" alt="Horse 10"></div>
+        <div class="horse" id="horse11"><img src="https://imgur.com/VEYIKcq.gif" alt="Horse 11"></div>
+        <div class="horse" id="horse12"><img src="https://imgur.com/VEYIKcq.gif" alt="Horse 12"></div>
+    </div>
+
+    <button id="startBtn">Start Race</button>
+
+    <h2 id="winner"></h2>
+
+    <div class="bet-info" id="betInfo"></div>
+
+    <script>
+        const horses = document.querySelectorAll('.horse');
+        const startBtn = document.getElementById('startBtn');
+        const winnerDisplay = document.getElementById('winner');
+        const betInfo = document.getElementById('betInfo');
+        const betButtons = document.querySelectorAll('.bet-btn');
+
+        let userBet = null;
+
+        // Function to disable all bet buttons
+        function disableBetButtons() {
+            betButtons.forEach(button => {
+                button.disabled = true;
+            });
+        }
+
+        // Function to reset the race
+        function resetRace() {
+            horses.forEach(horse => {
+                horse.style.transform = 'translateX(0)';
+            });
+            winnerDisplay.textContent = '';
+            betInfo.textContent = '';
+        }
+
+        // Function to start the race
+        function startRace() {
+            if (!userBet) {
+                winnerDisplay.textContent = "Please place your bet before starting the race.";
+                return;
+            }
+
+            resetRace();
+            startBtn.disabled = true;
+            let finished = false;
+
+            // Set random positions for horses
+            horses.forEach(horse => {
+                const distance = Math.random() * (90 - 80) + 80; // Random final position (80% to 90% of track)
+                const duration = Math.random() * (60 - 50) + 50; // Random time (50 to 60 seconds)
+
+                horse.style.transition = `${duration}s linear`;
+                horse.style.transform = `translateX(${distance}%)`;
+
+                setTimeout(() => {
+                    if (!finished) {
+                        finished = true;
+                        const winnerHorse = horse.querySelector('img').alt;
+                        winnerDisplay.textContent = `${winnerHorse} wins the race! 🏆`;
+
+                        // Check if the player's bet matches the winning horse
+                        if (winnerHorse === userBet) {
+                            winnerDisplay.textContent += " 🎉 Congratulations! You won!";
+                        } else {
+                            winnerDisplay.textContent += " Better luck next time!";
+                        }
+
+                        // Enable the start button again
+                        startBtn.disabled = false;
+                    }
+                }, duration * 1000);
+            });
+        }
+
+        // Add event listeners for bet buttons
+        betButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                userBet = button.id.replace('betHorse', 'Horse '); // Extract horse number from button id
+                betInfo.textContent = `You have placed a bet on ${userBet}.`;
+                disableBetButtons(); // Disable all bet buttons once the bet is placed
+            });
+        });
+
+        // Event listener for the Start Race button
+        startBtn.addEventListener('click', startRace);
+    </script>
+</body>
+</html>
