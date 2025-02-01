@@ -1,240 +1,263 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fishing Game</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color:;
-            margin: 0;
-            padding: 0;
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Fishing Game</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f0f8ff;
+      margin: 0;
+      padding: 0;
+    }
 
-        #game {
-            width: 80%;
-            margin: 30px auto;
-        }
+    #game {
+      width: 80%;
+      margin: 30px auto;
+    }
 
-        #map {
-            background-color: ;
-            height: 220px;
-            position: relative;
-            margin-bottom: 20px;
-            border-radius: 10px;
-        }
+    #map {
+      background-color: #cceeff;
+      height: 220px;
+      position: relative;
+      margin-bottom: 20px;
+      border-radius: 10px;
+    }
 
-        .areaBtn {
-            position: absolute;
-            padding: 10px 15px;
-            font-size: 14px;
-            cursor: pointer;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            border-radius: 5px;
-        }
+    .areaBtn {
+      position: absolute;
+      padding: 10px 15px;
+      font-size: 14px;
+      cursor: pointer;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 5px;
+    }
 
-        #area1 { top: 130px; left: 20px; }
-        #area2 { top: 180px; left: 60px; }
-        #area3 { top: 80px; left: 140px; }
-        #area4 { top: 150px; left: 230px; }
-        #area5 { top: 180px; left: 150px; }
+    #area1 { top: 130px; left: 20px; }
+    #area2 { top: 180px; left: 60px; }
+    #area3 { top: 80px; left: 140px; }
+    #area4 { top: 150px; left: 230px; }
+    #area5 { top: 180px; left: 150px; }
 
-        #fishingSpotImage {
-            width: 100%;
-        }
+    #fishingSpotImage {
+      width: 100%;
+    }
 
-        #fisherman {
-            margin-top: 20px;
-            text-align: right;
-        }
+    #fisherman {
+      margin-top: 20px;
+      text-align: right;
+    }
 
-        #inventory {
-            margin-top: 20px;
-            text-align: center;
-        }
+    /* Inventory Section */
+    #inventory {
+      margin-top: 20px;
+      text-align: center;
+    }
 
-        #fishingSpot {
-            text-align: center;
-            margin-top: 20px;
-        }
+    /* Rod selection style */
+    #chooseRod {
+      padding: 10px 15px;
+      font-size: 14px;
+      cursor: pointer;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      width: 100%;
+      margin-bottom: 10px;
+    }
 
-        #catchHistory {
-            margin-top: 30px;
-        }
+    #chooseRod select {
+      padding: 10px;
+      width: 100%;
+    }
 
-        #catchHistory ul {
-            list-style-type: none;
-            padding: 0;
-        }
+    /* Boat selection style (gaya sa rod selection) */
+    #chooseBoat {
+      padding: 10px 15px;
+      font-size: 14px;
+      cursor: pointer;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      width: 100%;
+      margin-top: 10px;
+    }
 
-        #catchHistory li {
-            background-color: #f1f1f1;
-            margin: 5px 0;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-        }
+    #chooseBoat select {
+      padding: 10px;
+      width: 100%;
+    }
 
-        #message {
-            font-size: 18px;
-            font-weight: bold;
-            color: white;
-            text-align: center;
-        }
+    /* Fishing Spot Section */
+    #fishingSpot {
+      text-align: center;
+      margin-top: 20px;
+    }
 
-        /* Pop-up window styles */
-        #popup {
-            display: none;
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background-color: rgba(0, 0, 0, 0.7);
-            padding: 20px;
-            border-radius: 10px;
-            text-align: center;
-            color: white;
-        }
+    /* Cast Line button: red background with white text */
+    #castLine {
+      background-color: red;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
 
-        #popup img {
-            max-width: 100%;
-            max-height: 200px;
-        }
+    #catchHistory {
+      margin-top: 30px;
+    }
 
-        #popup button {
-            margin-top: 10px;
-            padding: 10px 20px;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
+    #catchHistory ul {
+      list-style-type: none;
+      padding: 0;
+    }
 
-        #popup button:hover {
-            background-color: #45a049;
-        }
+    #catchHistory li {
+      background-color: #f1f1f1;
+      margin: 5px 0;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+    }
 
-        /* Positioning for total points in the lower section */
-        #pointsSection {
-            position: absolute;
-            bottom: 300px;
-            left: 20px;
-            font-size: 18px;
-            font-weight: bold;
-            color: orange;
-        }
+    #message {
+      font-size: 18px;
+      font-weight: bold;
+      color: white;
+      text-align: center;
+    }
 
-        /* New scrollable "Choose Rod" dropdown style */
-        #chooseRod {
-            padding: 10px 15px;
-            font-size: 14px;
-            cursor: pointer;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            width: 100%;
-        }
+    /* Pop-up window styles */
+    #popup {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background-color: rgba(0, 0, 0, 0.7);
+      padding: 20px;
+      border-radius: 10px;
+      text-align: center;
+      color: white;
+    }
 
-        #chooseRod select {
-            padding: 10px;
-            width: 100%;
-        }
+    #popup img {
+      max-width: 100%;
+      max-height: 200px;
+    }
 
-        #swapButton {
-            margin-top: 10px;
-            padding: 10px 20px;
-            background-color: #f44336;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
+    #popup button {
+      margin-top: 10px;
+      padding: 10px 20px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
 
-        #swapButton:hover {
-            background-color: #e53935;
-        }
-    </style>
+    #popup button:hover {
+      background-color: #45a049;
+    }
+
+    /* Positioning for total points in the lower section */
+    #pointsSection {
+      position: absolute;
+      bottom: 300px;
+      left: 20px;
+      font-size: 18px;
+      font-weight: bold;
+      color: orange;
+    }
+  </style>
 </head>
 <body>
-
-<div id="game">
+  <div id="game">
     <!-- Map Section with Fishing Spots -->
     <div id="map">
-        <p>Click on an area to choose a fishing spot.</p>
-        <button class="areaBtn" id="area1">Area 1</button>
-        <button class="areaBtn" id="area2">Area 2</button>
-        <button class="areaBtn" id="area3">Area 3</button>
-        <button class="areaBtn" id="area4">Area 4</button>
-        <button class="areaBtn" id="area5">Area 5</button>
-        <!-- Display fishing spot image -->
-        <img id="fishingSpotImage" src="https://imgur.com/TPxAbRB.jpg" alt="Fishing Spot" width="40%" />
+      <p>Click on an area to choose a fishing spot.</p>
+      <button class="areaBtn" id="area1">Area 1</button>
+      <button class="areaBtn" id="area2">Area 2</button>
+      <button class="areaBtn" id="area3">Area 3</button>
+      <button class="areaBtn" id="area4">Area 4</button>
+      <button class="areaBtn" id="area5">Area 5</button>
+      <!-- Display fishing spot image -->
+      <img id="fishingSpotImage" src="https://imgur.com/TPxAbRB.jpg" alt="Fishing Spot" width="40%" />
     </div>
 
     <!-- Fisherman Section -->
     <div id="fisherman">
-        <img id="fishermanImage" src="https://imgur.com/b9lcmhW.jpg" alt="Fisherman" width="150" />
+      <img id="fishermanImage" src="https://imgur.com/b9lcmhW.jpg" alt="Fisherman" width="150" />
     </div>
 
     <!-- Inventory Section -->
     <div id="inventory">
-        <div id="chooseRod">
-            <select>
-                <option value="rod1">Good Rod</option>
-                <option value="rod2">Special Rod</option>
-                <option value="rod3">Rare Rod</option>
-                <option value="rod4">Mythical Rod</option>
-            </select>
-        </div>
-        <button id="useBoat">Use Boat</button>
+      <div id="chooseRod">
+        <select>
+          <option value="rod1">Good Rod</option>
+          <option value="rod2">Special Rod</option>
+          <option value="rod3">Rare Rod</option>
+          <option value="rod4">Mythical Rod</option>
+        </select>
+      </div>
+      <div id="chooseBoat">
+        <select>
+          <option value="boat1">Boat</option>
+          <option value="boat2">Yacht</option>
+          <option value="boat3">Pirate Ship</option>
+          <option value="boat4">Cruise Ship</option>
+        </select>
+      </div>
     </div>
 
     <!-- Fishing Spot Section -->
     <div id="fishingSpot">
-        <button id="castLine">Cast Line</button>
-        <p id="catchMessage">Fish will appear here.</p>
+      <button id="castLine">Cast Line</button>
+      <p id="catchMessage">Fish will appear here.</p>
     </div>
 
     <!-- Fish Catch History Section -->
     <div id="catchHistory">
-        <h3>Fish Caught:</h3>
-        <ul id="caughtList">
-            <!-- List of caught fish will appear here -->
-        </ul>
+      <h3>Fish Caught:</h3>
+      <ul id="caughtList">
+        <!-- List of caught fish will appear here -->
+      </ul>
     </div>
 
     <!-- Swap Button -->
     <div>
-        <button id="swapButton">Swap!</button>
+      <button id="swapButton">Swap!</button>
     </div>
-</div>
+  </div>
 
-<!-- Current Points Section (Bottom Left Corner) -->
-<div id="pointsSection">
+  <!-- Current Points Section (Bottom Left Corner) -->
+  <div id="pointsSection">
     <h3>Total Points: <span id="totalPoints">0</span></h3>
     <h3>Energy: <span id="energy">20</span></h3>
-</div>
+  </div>
 
-<!-- Pop-up window -->
-<div id="popup">
+  <!-- Pop-up window -->
+  <div id="popup">
     <h3>Congratulations!</h3>
     <p id="popupMessage">You caught a fish!</p>
-    <img id="popupImage" src="" alt="Fish Image">
+    <img id="popupImage" src="" alt="Fish Image" />
     <button onclick="closePopup()">Close</button>
-</div>
+  </div>
 
-<script>
+  <script>
     // Fish catch probabilities and names with corresponding points
     const fishTypes = [
-        { name: 'Red Tilapia', rarity: 'Common', chance: 50, points: 10, image: 'https://imgur.com/9kbKj0u.jpg' },
-        { name: 'Snapper', rarity: 'Uncommon', chance: 30, points: 20, image: 'https://imgur.com/abOOJH7.jpg' },
-        { name: 'Yellow Fin', rarity: 'Rare', chance: 20, points: 30, image: 'https://imgur.com/3HnUHmm.jpg' },
-        { name: 'Shark', rarity: 'Very Rare', chance: 10, points: 50, image: 'https://imgur.com/ZreE4Q6.jpg' },
-        { name: 'Whale', rarity: 'Unique', chance: 5, points: 100, image: 'https://imgur.com/LoVkdcp.jpg' }
+      { name: 'Red Tilapia', rarity: 'Common', chance: 50, points: 10, image: 'https://imgur.com/9kbKj0u.jpg' },
+      { name: 'Snapper', rarity: 'Uncommon', chance: 30, points: 20, image: 'https://imgur.com/abOOJH7.jpg' },
+      { name: 'Yellow Fin', rarity: 'Rare', chance: 20, points: 30, image: 'https://imgur.com/3HnUHmm.jpg' },
+      { name: 'Shark', rarity: 'Very Rare', chance: 10, points: 50, image: 'https://imgur.com/ZreE4Q6.jpg' },
+      { name: 'Whale', rarity: 'Unique', chance: 5, points: 100, image: 'https://imgur.com/LoVkdcp.jpg' }
     ];
 
     let totalPoints = 0; // Variable to track total points
@@ -244,88 +267,87 @@
 
     // Fish catch logic
     function getRandomFish() {
-        let randomChance = Math.random() * 100;
-        let cumulativeChance = 0;
+      let randomChance = Math.random() * 100;
+      let cumulativeChance = 0;
 
-        for (const fish of fishTypes) {
-            cumulativeChance += fish.chance;
-            if (randomChance < cumulativeChance) {
-                return fish;
-            }
+      for (const fish of fishTypes) {
+        cumulativeChance += fish.chance;
+        if (randomChance < cumulativeChance) {
+          return fish;
         }
-        return null; // In case no fish is caught, though it shouldn't happen
+      }
+      return null; // In case no fish is caught, though it shouldn't happen
     }
 
     // Update points display
     function updatePoints() {
-        document.getElementById('totalPoints').textContent = totalPoints;
+      document.getElementById('totalPoints').textContent = totalPoints;
     }
 
     // Update energy display
     function updateEnergy() {
-        document.getElementById('energy').textContent = energy;
+      document.getElementById('energy').textContent = energy;
     }
 
     // Regenerate energy every 1 hour
     setInterval(function() {
-        if (energy < 20) {
-            energy += 1; // Regenerate 1 point of energy every hour
-            updateEnergy();
-        }
+      if (energy < 20) {
+        energy += 1; // Regenerate 1 point of energy every hour
+        updateEnergy();
+      }
     }, 3600000); // 1 hour = 3600000 milliseconds
 
     // Handle area button clicks
     document.querySelectorAll('.areaBtn').forEach(button => {
-        button.addEventListener('click', function() {
-            const area = this.id; // Get the area clicked (e.g., 'area1')
+      button.addEventListener('click', function() {
+        const area = this.id; // Get the area clicked (e.g., 'area1')
 
-            // Change fishing spot image depending on area selected
-            const fishingSpotImage = document.getElementById('fishingSpotImage');
-            fishingSpotImage.src = `https://imgur.com/TPxAbRB.jpg`; // Example image change per area (can be dynamic based on area)
+        // Change fishing spot image depending on area selected
+        const fishingSpotImage = document.getElementById('fishingSpotImage');
+        fishingSpotImage.src = `https://imgur.com/TPxAbRB.jpg`; // Example image change per area
 
-            // Update message
-            document.getElementById('message').textContent = `You selected ${area.toUpperCase()}. Cast your line to catch a fish!`;
-        });
+        // Update message (if needed, you can add a dedicated element for messages)
+        // document.getElementById('message').textContent = `You selected ${area.toUpperCase()}. Cast your line to catch a fish!`;
+      });
     });
 
     // Handle casting the line
     document.getElementById('castLine').addEventListener('click', function() {
-        if (castingUsed >= castingLimit) {
-            alert('Casting limit reached! Please wait for energy regeneration.');
-            return;
-        }
-        if (energy > 0) {
-            const fishCaught = getRandomFish();
-            const caughtList = document.getElementById('caughtList');
-            const listItem = document.createElement('li');
-            listItem.textContent = `Caught a ${fishCaught.name} (${fishCaught.rarity}) - Points: ${fishCaught.points}`;
-            caughtList.appendChild(listItem);
+      if (castingUsed >= castingLimit) {
+        alert('Casting limit reached! Please wait for energy regeneration.');
+        return;
+      }
+      if (energy > 0) {
+        const fishCaught = getRandomFish();
+        const caughtList = document.getElementById('caughtList');
+        const listItem = document.createElement('li');
+        listItem.textContent = `Caught a ${fishCaught.name} (${fishCaught.rarity}) - Points: ${fishCaught.points}`;
+        caughtList.appendChild(listItem);
 
-            // Update total points
-            totalPoints += fishCaught.points;
-            updatePoints();
+        // Update total points
+        totalPoints += fishCaught.points;
+        updatePoints();
 
-            // Update catch message
-            document.getElementById('catchMessage').textContent = `You caught a ${fishCaught.name}! (Rarity: ${fishCaught.rarity})`;
+        // Update catch message
+        document.getElementById('catchMessage').textContent = `You caught a ${fishCaught.name}! (Rarity: ${fishCaught.rarity})`;
 
-            // Show pop-up with fish image and message
-            document.getElementById('popupMessage').textContent = `You caught a ${fishCaught.name}!`;
-            document.getElementById('popupImage').src = fishCaught.image;
-            document.getElementById('popup').style.display = 'block';
+        // Show pop-up with fish image and message
+        document.getElementById('popupMessage').textContent = `You caught a ${fishCaught.name}!`;
+        document.getElementById('popupImage').src = fishCaught.image;
+        document.getElementById('popup').style.display = 'block';
 
-            castingUsed++;
-            energy--; // Decrease energy by 1 after each cast
-            updateEnergy();
-        } else {
-            alert('Not enough energy! Please wait for energy regeneration.');
-        }
+        castingUsed++;
+        energy--; // Decrease energy by 1 after each cast
+        updateEnergy();
+      } else {
+        alert('Not enough energy! Please wait for energy regeneration.');
+      }
     });
 
     // Function to close the pop-up
     function closePopup() {
-        document.getElementById('popup').style.display = 'none';
+      document.getElementById('popup').style.display = 'none';
     }
-</script>
-
+  </script>
 </body>
 </html>
