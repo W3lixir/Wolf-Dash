@@ -1,432 +1,527 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Fishing Game</title>
-  <!-- Google Font para sa fishing theme (gamitin ang "Pacifico") -->
-  <link href="https://fonts.googleapis.com/css?family=Pacifico&display=swap" rel="stylesheet">
+  <meta charset="UTF-8">
+  <title>Wolf Dash By Stratton Lab</title>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #f0f8ff;
+    /* Header Navigation Styles */
+    header {
+      background-color: #333;
+      padding: 10px 0;
+      position: relative;
+      z-index: 2;
+    }
+    header nav ul {
+      list-style: none;
       margin: 0;
       padding: 0;
+      display: flex;
+      justify-content: center;
+    }
+    header nav ul li {
+      margin: 0 15px;
+    }
+    header nav ul li a {
+      color: #fff;
+      text-decoration: none;
+      font-size: 18px;
     }
 
-    /* Main Screen Styles */
-    #mainScreen {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100vh;
+    /* Global Styles */
+    body, html {
+      margin: 0;
+  padding: 0;
+  height: 100%;
+  font-family: Arial, sans-serif;
+  background: url('https://imgur.com/kRRzasw.png'); /* Replace with your image URL */
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+    }
+    button {
+      border: none;
+      cursor: pointer;
+      font-size: 16px;
+      border-radius: 5px;
+    }
+    /* Main Screen with Background Video */
+    #main-screen {
+      position: relative;
+      height: calc(100vh - 60px); /* full viewport height minus header */
       overflow: hidden;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      z-index: 1000;
-      color: white;
+      color: #fff;
       text-align: center;
     }
-
-    /* Video background styling */
-    #bgVideo {
+    /* Background Video Styling */
+    #bg-video {
       position: absolute;
-      top: 50%;
-      left: 50%;
+      top: 0;
+      left: 0;
       min-width: 100%;
       min-height: 100%;
       width: auto;
       height: auto;
-      z-index: -1;
-      transform: translate(-50%, -50%);
-      filter: brightness(50%);
+      z-index: 1;
+      object-fit: cover;
     }
-
-    #mainScreen h1 {
-      font-family: 'Pacifico', cursive;
-      font-size: 64px;
-      margin-bottom: 40px;
-      text-shadow: 2px 2px 4px rgba(0,0,0,0.7);
-    }
-
-    .mainButton {
-      padding: 15px 30px;
-      font-size: 18px;
-      margin: 10px;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-
-    #startFishing {
-      background-color: #ff4500;
-      color: white;
-    }
-
-    #connectWallet {
-      background-color: #4CAF50;
-      color: white;
-    }
-
-    /* Game Container Styles */
-    #game {
-      width: 80%;
-      margin: 30px auto;
-      display: none; /* Naka-hidden hanggang pindutin ang "Start Fishing" */
-    }
-
-    #map {
-      background-color: #cceeff;
-      height: 220px;
+    /* Main Content Over Video */
+    .main-content {
       position: relative;
-      margin-bottom: 20px;
-      border-radius: 10px;
-    }
-
-    .areaBtn {
-      position: absolute;
-      padding: 10px 15px;
-      font-size: 14px;
-      cursor: pointer;
-      background-color: #4CAF50;
-      color: white;
-      border: none;
-      border-radius: 5px;
-    }
-
-    #area1 { top: 130px; left: 20px; }
-    #area2 { top: 180px; left: 60px; }
-    #area3 { top: 80px; left: 140px; }
-    #area4 { top: 150px; left: 230px; }
-    #area5 { top: 180px; left: 150px; }
-
-    #fishingSpotImage {
-      width: 100%;
-    }
-
-    #fisherman {
-      margin-top: 20px;
-      text-align: right;
-    }
-
-    /* Inventory Section */
-    #inventory {
-      margin-top: 20px;
-      text-align: center;
-    }
-
-    /* Rod selection style */
-    #chooseRod {
-      padding: 10px 15px;
-      font-size: 14px;
-      cursor: pointer;
-      background-color: #4CAF50;
-      color: white;
-      border: none;
-      border-radius: 5px;
-      width: 100%;
-      margin-bottom: 10px;
-    }
-
-    #chooseRod select {
-      padding: 10px;
-      width: 100%;
-    }
-
-    /* Boat selection style (gaya ng rod selection) */
-    #chooseBoat {
-      padding: 10px 15px;
-      font-size: 14px;
-      cursor: pointer;
-      background-color: #4CAF50;
-      color: white;
-      border: none;
-      border-radius: 5px;
-      width: 100%;
-      margin-top: 10px;
-    }
-
-    #chooseBoat select {
-      padding: 10px;
-      width: 100%;
-    }
-
-    /* Fishing Spot Section */
-    #fishingSpot {
-      text-align: center;
-      margin-top: 20px;
-    }
-
-    /* Cast Line button: red background with white text */
-    #castLine {
-      background-color: red;
-      color: white;
-      padding: 10px 20px;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-
-    #catchHistory {
-      margin-top: 30px;
-    }
-
-    #catchHistory ul {
-      list-style-type: none;
-      padding: 0;
-    }
-
-    #catchHistory li {
-      background-color: #f1f1f1;
-      margin: 5px 0;
-      padding: 10px;
-      border: 1px solid #ddd;
-      border-radius: 5px;
-    }
-
-    /* Pop-up window styles */
-    #popup {
-      display: none;
-      position: fixed;
+      z-index: 2;
       top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      background-color: rgba(0, 0, 0, 0.7);
-      padding: 20px;
-      border-radius: 10px;
-      text-align: center;
-      color: white;
-      z-index: 2000;
+      transform: translateY(-50%);
     }
-
-    #popup img {
-      max-width: 100%;
-      max-height: 200px;
+    .main-content h1 {
+      font-size: 48px;
+      margin-bottom: 20px;
+      text-shadow: 2px 2px 4px #000;
     }
-
-    #popup button {
-      margin-top: 10px;
+    .main-content button {
       padding: 10px 20px;
-      background-color: #4CAF50;
-      color: white;
-      border: none;
+      margin: 10px;
+    }
+    
+    /* Game Screen */
+    #game-screen {
+      display: none;
+      padding: 20px;
+      text-align: center;
+    }
+    /* Caption at Top of Game Screen */
+    #game-caption {
+      font-size: 28px;
+      font-weight: bold;
+      margin-bottom: 20px;
+    }
+    /* Container for Bet and Race Track */
+    #game-container {
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      gap: 20px;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+    /* Bet Container on Left Side */
+    #bet-container {
+      width: 100px;
+    }
+    .bet-buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .bet-buttons button {
+      background-color: blue;
+      color: #fff;
+      padding: 8px;
+      border: 1px solid transparent;
+      transition: background-color 0.3s, border 0.3s;
+    }
+    .bet-buttons button.selected {
+      background-color: darkred;
+      border: 2px solid gold;
+    }
+    /* Race Container */
+    #race-container {
+      flex-grow: 1;
+    }
+    /* Race Track with Background Image */
+    #race-track {
+      position: relative;
+      margin: 0 auto;
+      width: 100%;
+      max-width: 800px;
+      height: 360px; /* 8 lanes x 45px each */
+      border: 2px solid #000;
+      background-image: url('https://imgur.com/V7hmVyi.jpg'); /* Replace with your desired background image */
+      background-size: cover;
+      background-position: center;
+      overflow: hidden;
+    }
+    .lane {
+      position: relative;
+      width: 100%;
+      height: 45px;
+      border-bottom: 1px dashed #ccc;
+      display: flex;
+      align-items: center;
+    }
+    .lane:last-child {
+      border-bottom: none;
+    }
+    /* Highlight the lane of the chosen horse with a light green background */
+    .lane.user-bet {
+      background-color: lightgreen;
+    }
+    /* Horse images: start at 5px from the left */
+    .horse {
+      position: absolute;
+      left: 5px;
+      transition: left 0.05s linear;
+    }
+    .horse img {
+      width: 50px;
+      height: auto;
+    }
+    /* Highlight the current leader with a gold border */
+    .leader {
+      border: 2px solid gold;
+      border-radius: 50%;
+      padding: 2px;
+    }
+    /* Start and Finish Lines */
+    #start-line {
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 2px;
+      background: black;
+    }
+    #finish-line {
+      position: absolute;
+      right: 0;
+      top: 0;
+      bottom: 0;
+      width: 2px;
+      background: black;
+    }
+    /* Popup for Winner Congratulation */
+    #popup {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.5);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 100;
+    }
+    #popup-content {
+      background: #fff;
+      padding: 20px;
       border-radius: 5px;
+      text-align: center;
+      position: relative;
+      max-width: 300px;
+    }
+    #popup-content img {
+      max-width: 100%;
+      height: auto;
+      margin-top: 10px;
+    }
+    #close-popup {
+      position: absolute;
+      top: 5px;
+      right: 10px;
+      font-size: 20px;
       cursor: pointer;
     }
-
-    #popup button:hover {
-      background-color: #45a049;
-    }
-
-    /* Positioning for total points in the lower section */
-    #pointsSection {
-      position: absolute;
-      bottom: 300px;
-      left: 20px;
+    /* Race Control Buttons */
+    #begin-race, #reset-button {
+      margin-top: 20px;
+      padding: 10px 30px;
       font-size: 18px;
-      font-weight: bold;
-      color: orange;
+    }
+    #begin-race:disabled {
+      background-color: #aaa;
+      color: #eee;
+    }
+    #reset-button {
+      display: none;
     }
   </style>
 </head>
 <body>
-  <!-- Main Screen with video background -->
-  <div id="mainScreen">
-    <!-- Video element; palitan ang src ng tamang URL ng iyong video -->
-    <video autoplay muted loop id="bgVideo">
-      <source src="https://imgur.com/QSsp90k.mp4" type="video/mp4">
-      Your browser does not support HTML5 video.
-    </video>
-    <h3>RUGGYFISH</h3>
-    <button id="startFishing" class="mainButton">Start Fishing</button>
-    <button id="connectWallet" class="mainButton">Connect Wallet</button>
-  </div>
 
-  <!-- Game Container -->
-  <div id="game">
-    <!-- Map Section with Fishing Spots -->
-    <div id="map">
-      <p>Click on an area to choose a fishing spot.</p>
-      <button class="areaBtn" id="area1">Area 1</button>
-      <button class="areaBtn" id="area2">Area 2</button>
-      <button class="areaBtn" id="area3">Area 3</button>
-      <button class="areaBtn" id="area4">Area 4</button>
-      <button class="areaBtn" id="area5">Area 5</button>
-      <!-- Display fishing spot image -->
-      <img id="fishingSpotImage" src="https://imgur.com/TPxAbRB.jpg" alt="Fishing Spot" width="40%" />
-    </div>
-
-    <!-- Fisherman Section -->
-    <div id="fisherman">
-      <img id="fishermanImage" src="https://imgur.com/b9lcmhW.jpg" alt="Fisherman" width="150" />
-    </div>
-
-    <!-- Inventory Section -->
-    <div id="inventory">
-      <div id="chooseRod">
-        <select>
-          <option value="rod1">Good Rod</option>
-          <option value="rod2">Special Rod</option>
-          <option value="rod3">Rare Rod</option>
-          <option value="rod4">Mythical Rod</option>
-        </select>
-      </div>
-      <div id="chooseBoat">
-        <select>
-          <option value="boat1">Boat</option>
-          <option value="boat2">Yacht</option>
-          <option value="boat3">Pirate Ship</option>
-          <option value="boat4">Cruise Ship</option>
-        </select>
-      </div>
-    </div>
-
-    <!-- Fishing Spot Section -->
-    <div id="fishingSpot">
-      <button id="castLine">Cast Line</button>
-      <p id="catchMessage">Fish will appear here.</p>
-    </div>
-
-    <!-- Fish Catch History Section -->
-    <div id="catchHistory">
-      <h3>Fish Caught:</h3>
-      <ul id="caughtList">
-        <!-- List of caught fish will appear here -->
+  <!-- Header Navigation -->
+  <header>
+    <nav>
+      <ul>
+        <li><a href="#">Marketplace</a></li>
+        <li><a href="#">Stable</a></li>
+        <li><a href="#">Coming Soon</a></li>
+        <li><a href="#">Coming Soon</a></li>
       </ul>
-    </div>
+    </nav>
+  </header>
 
-    <!-- Swap Button -->
-    <div>
-      <button id="swapButton">Swap!</button>
+  <!-- Main Screen with Background Video -->
+  <div id="main-screen">
+    <video autoplay loop muted playsinline id="bg-video">
+      <source src="https://imgur.com/kRRzasw.jpeg" type="image">
+      Your browser does not support the video tag.
+    </video>
+    <div class="main-content">
+      <h1>Wolf Dash By Stratton Lab</h1>
+      <button id="connect-wallet" style="background-color: green; color: white;">Connect Wallet</button>
+      <br><br>
+      <button id="go-to-game" style="background-color: red; color: white;">Let's RACE!</button>
     </div>
   </div>
 
-  <!-- Current Points Section (Bottom Left Corner) -->
-  <div id="pointsSection">
-    <h3>Total Points: <span id="totalPoints">0</span></h3>
-    <h3>Energy: <span id="energy">20</span></h3>
+  <!-- Game Screen -->
+  <div id="game-screen">
+    <div id="game-caption">WOLF DASH!</div>
+    <div id="game-container">
+      <!-- Bet Buttons on Left Side -->
+      <div id="bet-container">
+        <div class="bet-buttons">
+          <button data-horse="0">Wolf 1</button>
+          <button data-horse="1">Wolf 2</button>
+          <button data-horse="2">Wolf 3</button>
+          <button data-horse="3">Wolf 4</button>
+          <button data-horse="4">Wolf 5</button>
+          <button data-horse="5">Wolf 6</button>
+          <button data-horse="6">Wolf 7</button>
+          <button data-horse="7">Wolf 8</button>
+        </div>
+      </div>
+      <!-- Race Track Container -->
+      <div id="race-container">
+        <div id="race-track">
+          <div id="start-line"></div>
+          <div id="finish-line"></div>
+          <!-- 8 Lanes for 8 Horses -->
+          <div class="lane" data-lane="0">
+            <div class="horse" id="horse0" style="top: 5px;">
+              <img src="https://imgur.com/Jc9fsXU.png" alt="Horse">
+            </div>
+          </div>
+          <div class="lane" data-lane="1">
+            <div class="horse" id="horse1" style="top: 5px;">
+              <img src="https://imgur.com/kZ5JgR5.png" alt="Horse">
+            </div>
+          </div>
+          <div class="lane" data-lane="2">
+            <div class="horse" id="horse2" style="top: 5px;">
+              <img src="https://imgur.com/XLmMjrb.png" alt="Horse">
+            </div>
+          </div>
+          <div class="lane" data-lane="3">
+            <div class="horse" id="horse3" style="top: 5px;">
+              <img src="https://imgur.com/WHDxS9t.png" alt="Horse">
+            </div>
+          </div>
+          <div class="lane" data-lane="4">
+            <div class="horse" id="horse4" style="top: 5px;">
+              <img src="https://imgur.com/hFVxNF0.png" alt="Horse">
+            </div>
+          </div>
+          <div class="lane" data-lane="5">
+            <div class="horse" id="horse5" style="top: 5px;">
+              <img src="https://imgur.com/jgOpzNU.png" alt="Horse">
+            </div>
+          </div>
+          <div class="lane" data-lane="6">
+            <div class="horse" id="horse6" style="top: 5px;">
+              <img src="https://imgur.com/XvSNsQQ.png" alt="Horse">
+            </div>
+          </div>
+          <div class="lane" data-lane="7">
+            <div class="horse" id="horse7" style="top: 5px;">
+              <img src="https://imgur.com/iaq02nx.png" alt="Horse">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <br>
+    <!-- Race Control Buttons -->
+    <button id="begin-race" disabled style="background-color: blue; color: white;">Start Race</button>
+    <button id="reset-button">Reset Race</button>
   </div>
 
-  <!-- Pop-up window -->
+  <!-- Popup for Winner Congratulation -->
   <div id="popup">
-    <h3>Congratulations!</h3>
-    <p id="popupMessage">You caught a fish!</p>
-    <img id="popupImage" src="" alt="Fish Image" />
-    <button onclick="closePopup()">Close</button>
+    <div id="popup-content">
+      <span id="close-popup">&times;</span>
+      <h2 id="winner-message"></h2>
+      <!-- Confetti GIF -->
+      <img src="https://imgur.com/ZnsszDZ.png" alt="Confetti">
+    </div>
   </div>
 
   <script>
-    /* --- Main Screen Functionality --- */
-    // Kapag pinindot ang "Start Fishing", itatago ang main screen at ipapakita ang game container.
-    document.getElementById('startFishing').addEventListener('click', function() {
-      document.getElementById('mainScreen').style.display = 'none';
-      document.getElementById('game').style.display = 'block';
+    // -------- Global Variables --------
+    let userBet = null;          // Stores the chosen horse number (as a string)
+    let raceInterval;            // Reference for the race interval timer
+    const raceDuration = 60 * 1000; // 1 minute race duration
+    let raceStartTime;
+    let horses = [];             // Holds each horse's current left position (in pixels)
+    const initialPosition = 5;   // Horses will start (or be reset) at 5px
+
+    // Grab the finish line element for reference
+    const finishLine = document.getElementById('finish-line');
+
+    // -------- Main Screen Transition --------
+    document.getElementById('go-to-game').addEventListener('click', function() {
+      document.getElementById('main-screen').style.display = 'none';
+      document.getElementById('game-screen').style.display = 'block';
     });
 
-    // Placeholder para sa wallet connection.
-    document.getElementById('connectWallet').addEventListener('click', function() {
-      connectWallet();
+    // Dummy Connect Wallet function
+    document.getElementById('connect-wallet').addEventListener('click', function() {
+      alert('Wallet connected! (Dummy function)');
     });
 
-    // Dummy function para sa wallet connection (i-integrate dito ang aktwal na Telegram crypto wallet API kung available)
-    function connectWallet() {
-      alert('Connecting to your crypto wallet...');
-      document.getElementById('connectWallet').textContent = 'Wallet Connected';
-    }
-
-    /* --- Fishing Game Functionality --- */
-    // Fish catch probabilities and details
-    const fishTypes = [
-      { name: 'Red Tilapia', rarity: 'Common', chance: 50, points: 10, image: 'https://imgur.com/9kbKj0u.jpg' },
-      { name: 'Snapper', rarity: 'Uncommon', chance: 30, points: 20, image: 'https://imgur.com/abOOJH7.jpg' },
-      { name: 'Yellow Fin', rarity: 'Rare', chance: 20, points: 30, image: 'https://imgur.com/3HnUHmm.jpg' },
-      { name: 'Shark', rarity: 'Very Rare', chance: 10, points: 50, image: 'https://imgur.com/ZreE4Q6.jpg' },
-      { name: 'Whale', rarity: 'Unique', chance: 5, points: 100, image: 'https://imgur.com/LoVkdcp.jpg' }
-    ];
-
-    let totalPoints = 0;      
-    let castingLimit = 20;    
-    let energy = 20;          
-    let castingUsed = 0;      
-
-    // Function para pumili ng random fish
-    function getRandomFish() {
-      let randomChance = Math.random() * 100;
-      let cumulativeChance = 0;
-      for (const fish of fishTypes) {
-        cumulativeChance += fish.chance;
-        if (randomChance < cumulativeChance) {
-          return fish;
+    // -------- Bet Buttons (in Bet Container) --------
+    const betButtons = document.querySelectorAll('#bet-container .bet-buttons button');
+    betButtons.forEach(btn => {
+      btn.addEventListener('click', function() {
+        if (userBet === null) {
+          userBet = this.getAttribute('data-horse');
+          // Mark the chosen button as selected
+          this.classList.add('selected');
+          // Disable all bet buttons so the bet remains fixed
+          betButtons.forEach(b => { b.disabled = true; });
+          alert('You bet on Horse ' + (parseInt(userBet) + 1));
+          // Add a light green highlight to the corresponding lane
+          const lane = document.querySelector('.lane[data-lane="' + userBet + '"]');
+          if(lane) {
+            lane.classList.add('user-bet');
+          }
+          // Enable the Start Race button
+          document.getElementById('begin-race').disabled = false;
         }
-      }
-      return null;
-    }
-
-    // Update points display
-    function updatePoints() {
-      document.getElementById('totalPoints').textContent = totalPoints;
-    }
-
-    // Update energy display
-    function updateEnergy() {
-      document.getElementById('energy').textContent = energy;
-    }
-
-    // Regenerate energy every 1 hour (3600000 ms)
-    setInterval(function() {
-      if (energy < 20) {
-        energy += 1;
-        updateEnergy();
-      }
-    }, 3600000);
-
-    // Handle area button clicks
-    document.querySelectorAll('.areaBtn').forEach(button => {
-      button.addEventListener('click', function() {
-        const area = this.id;
-        const fishingSpotImage = document.getElementById('fishingSpotImage');
-        // Halimbawa: baguhin ang imahe base sa area (dito pareho lang ang ginagamit)
-        fishingSpotImage.src = 'https://imgur.com/TPxAbRB.jpg';
       });
     });
 
-    // Handle casting the line
-    document.getElementById('castLine').addEventListener('click', function() {
-      if (castingUsed >= castingLimit) {
-        alert('Casting limit reached! Please wait for energy regeneration.');
-        return;
-      }
-      if (energy > 0) {
-        const fishCaught = getRandomFish();
-        const caughtList = document.getElementById('caughtList');
-        const listItem = document.createElement('li');
-        listItem.textContent = `Caught a ${fishCaught.name} (${fishCaught.rarity}) - Points: ${fishCaught.points}`;
-        caughtList.appendChild(listItem);
-
-        totalPoints += fishCaught.points;
-        updatePoints();
-
-        document.getElementById('catchMessage').textContent = `You caught a ${fishCaught.name}! (Rarity: ${fishCaught.rarity})`;
-
-        document.getElementById('popupMessage').textContent = `You caught a ${fishCaught.name}!`;
-        document.getElementById('popupImage').src = fishCaught.image;
-        document.getElementById('popup').style.display = 'block';
-
-        castingUsed++;
-        energy--;
-        updateEnergy();
-      } else {
-        alert('Not enough energy! Please wait for energy regeneration.');
-      }
+    // -------- Start Race Button --------
+    document.getElementById('begin-race').addEventListener('click', function() {
+      this.disabled = true; // Prevent multiple clicks
+      startRace();
     });
 
-    // Function to close the pop-up
-    function closePopup() {
-      document.getElementById('popup').style.display = 'none';
+    // -------- Race Functions --------
+    function startRace() {
+      // Initialize positions for all horses at the starting position
+      for (let i = 0; i < 8; i++) {
+        horses[i] = initialPosition;
+        const horseEl = document.getElementById('horse' + i);
+        horseEl.style.left = horses[i] + 'px';
+        horseEl.classList.remove('leader');
+      }
+      raceStartTime = Date.now();
+      raceInterval = setInterval(updateRace, 50);
     }
+
+    function updateRace() {
+      const now = Date.now();
+      const elapsed = now - raceStartTime;
+      let raceFinished = false;
+      let winner = null;
+
+      // Update each horse's position
+      for (let i = 0; i < 8; i++) {
+        // Random increment between 1 and 10 pixels per tick
+        let increment = Math.random() * 10 + 1;
+        horses[i] += increment;
+        const horseEl = document.getElementById('horse' + i);
+        horseEl.style.left = horses[i] + 'px';
+
+        // If a horse crosses the finish line, declare it the winner
+        if (horses[i] >= finishLine.offsetLeft) {
+          raceFinished = true;
+          winner = i;
+          break;
+        }
+      }
+
+      // Determine the current leader and highlight it with a gold border
+      let leaderIndex = 0;
+      let maxDistance = horses[0];
+      for (let i = 1; i < 8; i++) {
+        if (horses[i] > maxDistance) {
+          maxDistance = horses[i];
+          leaderIndex = i;
+        }
+      }
+      for (let i = 0; i < 8; i++) {
+        document.getElementById('horse' + i).classList.remove('leader');
+      }
+      document.getElementById('horse' + leaderIndex).classList.add('leader');
+
+      // End race if a horse crosses the finish line
+      if (raceFinished) {
+        clearInterval(raceInterval);
+        showWinner(winner);
+        return;
+      }
+
+      // End race if 1 minute has elapsed—award victory to the furthest horse
+      if (elapsed >= raceDuration) {
+        clearInterval(raceInterval);
+        let furthest = initialPosition;
+        for (let i = 0; i < 8; i++) {
+          if (horses[i] > furthest) {
+            furthest = horses[i];
+            winner = i;
+          }
+        }
+        showWinner(winner);
+      }
+    }
+
+    // Display the popup with the winning message and confetti
+    function showWinner(winner) {
+  const winnerMessage = document.getElementById('winner-message');
+  const popupImage = document.querySelector('#popup-content img');
+  let message = 'Horse ' + (winner + 1) + ' wins!';
+  
+  if (userBet !== null) {
+    if (parseInt(userBet) === winner) {
+      // Winner message: palitan ang text dito ayon sa gusto mo
+      message += 'You Won!! you got 5X!';
+      // Palitan ang image URL kung gusto mo
+      popupImage.src = "https://imgur.com/8wG4LgO.png"; 
+    } else {
+      // Loser message: palitan ang text dito ayon sa gusto mo
+      message += 'Let us Try again!! ill give you another 10 points!';
+      // Palitan ang image URL kung gusto mo
+      popupImage.src = "https://imgur.com/ZnsszDZ.png";
+    }
+  }
+  
+  winnerMessage.textContent = message;
+  document.getElementById('popup').style.display = 'flex';
+  document.getElementById('reset-button').style.display = 'inline-block';
+}
+    // Close the popup when the X is clicked
+    document.getElementById('close-popup').addEventListener('click', function() {
+      document.getElementById('popup').style.display = 'none';
+    });
+
+    // -------- Reset Button --------
+    document.getElementById('reset-button').addEventListener('click', function() {
+      clearInterval(raceInterval);
+      // Reset the bet status as well:
+      userBet = null;
+      // Re-enable bet buttons and remove the selected style from each
+      betButtons.forEach(b => {
+        b.disabled = false;
+        b.classList.remove('selected');
+      });
+      // Remove the light green highlight from all lanes
+      const lanes = document.querySelectorAll('.lane');
+      lanes.forEach(lane => {
+        lane.classList.remove('user-bet');
+      });
+      // Reset horse positions to 5px and remove any leader highlight
+      for (let i = 0; i < 8; i++) {
+        horses[i] = initialPosition;
+        const horseEl = document.getElementById('horse' + i);
+        horseEl.style.left = horses[i] + 'px';
+        horseEl.classList.remove('leader');
+      }
+      // Disable the Start Race button until a new bet is placed
+      document.getElementById('begin-race').disabled = true;
+      document.getElementById('popup').style.display = 'none';
+      document.getElementById('reset-button').style.display = 'none';
+    });
   </script>
 </body>
 </html>
