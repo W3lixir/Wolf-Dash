@@ -4,39 +4,16 @@
   <meta charset="UTF-8">
   <title>Wolf Dash By Stratton Lab</title>
   <style>
-    /* Header Navigation Styles */
-    header {
-      background-color: #333;
-      padding: 10px 0;
-      position: relative;
-      z-index: 2;
-    }
-    header nav ul {
-      list-style: none;
-      margin: 0;
-      padding: 0;
-      display: flex;
-      justify-content: center;
-    }
-    header nav ul li {
-      margin: 0 15px;
-    }
-    header nav ul li a {
-      color: #fff;
-      text-decoration: none;
-      font-size: 18px;
-    }
-
     /* Global Styles */
     body, html {
       margin: 0;
-  padding: 0;
-  height: 100%;
-  font-family: Arial, sans-serif;
-  background: url('https://imgur.com/kRRzasw.png'); /* Replace with your image URL */
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
+      padding: 0;
+      height: 100%;
+      font-family: Arial, sans-serif;
+      background: url('https://imgur.com/Y8zrosd.png'); /* Replace with your image URL */
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
     }
     button {
       border: none;
@@ -47,7 +24,7 @@
     /* Main Screen with Background Video */
     #main-screen {
       position: relative;
-      height: calc(100vh - 60px); /* full viewport height minus header */
+      height: calc(100vh - 60px); /* full viewport height minus header space */
       overflow: hidden;
       color: #fff;
       text-align: center;
@@ -237,22 +214,10 @@
 </head>
 <body>
 
-  <!-- Header Navigation -->
-  <header>
-    <nav>
-      <ul>
-        <li><a href="#">Marketplace</a></li>
-        <li><a href="#">Stable</a></li>
-        <li><a href="#">Coming Soon</a></li>
-        <li><a href="#">Coming Soon</a></li>
-      </ul>
-    </nav>
-  </header>
-
   <!-- Main Screen with Background Video -->
   <div id="main-screen">
     <video autoplay loop muted playsinline id="bg-video">
-      <source src="https://imgur.com/kRRzasw.jpeg" type="image">
+      <source src="https://imgur.com/2Eeoldo.jpeg" type="image">
       Your browser does not support the video tag.
     </video>
     <div class="main-content">
@@ -265,7 +230,7 @@
 
   <!-- Game Screen -->
   <div id="game-screen">
-    <div id="game-caption">WOLF DASH!</div>
+    <div id="game-caption"></div>
     <div id="game-container">
       <!-- Bet Buttons on Left Side -->
       <div id="bet-container">
@@ -332,7 +297,7 @@
     <br>
     <!-- Race Control Buttons -->
     <button id="begin-race" disabled style="background-color: blue; color: white;">Start Race</button>
-    <button id="reset-button">Reset Race</button>
+    <button id="reset-button">Race Again!</button>
   </div>
 
   <!-- Popup for Winner Congratulation -->
@@ -349,7 +314,7 @@
     // -------- Global Variables --------
     let userBet = null;          // Stores the chosen horse number (as a string)
     let raceInterval;            // Reference for the race interval timer
-    const raceDuration = 60 * 1000; // 1 minute race duration
+    const raceDuration = 120000 * 10000 * 30000 * 10000 * 10000; // Increased race duration by 400%: 10 minutes (600 seconds)
     let raceStartTime;
     let horses = [];             // Holds each horse's current left position (in pixels)
     const initialPosition = 5;   // Horses will start (or be reset) at 5px
@@ -378,7 +343,7 @@
           this.classList.add('selected');
           // Disable all bet buttons so the bet remains fixed
           betButtons.forEach(b => { b.disabled = true; });
-          alert('You bet on Horse ' + (parseInt(userBet) + 1));
+          // (Alert removed as per instruction)
           // Add a light green highlight to the corresponding lane
           const lane = document.querySelector('.lane[data-lane="' + userBet + '"]');
           if(lane) {
@@ -418,7 +383,7 @@
       // Update each horse's position
       for (let i = 0; i < 8; i++) {
         // Random increment between 1 and 10 pixels per tick
-        let increment = Math.random() * 10 + 1;
+        let increment = Math.random() * 1 + 1;
         horses[i] += increment;
         const horseEl = document.getElementById('horse' + i);
         horseEl.style.left = horses[i] + 'px';
@@ -468,28 +433,28 @@
 
     // Display the popup with the winning message and confetti
     function showWinner(winner) {
-  const winnerMessage = document.getElementById('winner-message');
-  const popupImage = document.querySelector('#popup-content img');
-  let message = 'Horse ' + (winner + 1) + ' wins!';
-  
-  if (userBet !== null) {
-    if (parseInt(userBet) === winner) {
-      // Winner message: palitan ang text dito ayon sa gusto mo
-      message += 'You Won!! you got 5X!';
-      // Palitan ang image URL kung gusto mo
-      popupImage.src = "https://imgur.com/8wG4LgO.png"; 
-    } else {
-      // Loser message: palitan ang text dito ayon sa gusto mo
-      message += 'Let us Try again!! ill give you another 10 points!';
-      // Palitan ang image URL kung gusto mo
-      popupImage.src = "https://imgur.com/ZnsszDZ.png";
+      const winnerMessage = document.getElementById('winner-message');
+      const popupImage = document.querySelector('#popup-content img');
+      let message = 'Horse ' + (winner + 1) + ' wins!';
+      
+      if (userBet !== null) {
+        if (parseInt(userBet) === winner) {
+          // Winner message: palitan ang text dito ayon sa gusto mo
+          message += 'You Won!! you got 5X!';
+          // Palitan ang image URL kung gusto mo
+          popupImage.src = "https://imgur.com/Jwem616.png"; 
+        } else {
+          // Loser message: palitan ang text dito ayon sa gusto mo
+          message += 'Let us Try again!! ill give you another 10 points!';
+          // Palitan ang image URL kung gusto mo
+          popupImage.src = "https://imgur.com/ZnsszDZ.png";
+        }
+      }
+      
+      winnerMessage.textContent = message;
+      document.getElementById('popup').style.display = 'flex';
+      document.getElementById('reset-button').style.display = 'inline-block';
     }
-  }
-  
-  winnerMessage.textContent = message;
-  document.getElementById('popup').style.display = 'flex';
-  document.getElementById('reset-button').style.display = 'inline-block';
-}
     // Close the popup when the X is clicked
     document.getElementById('close-popup').addEventListener('click', function() {
       document.getElementById('popup').style.display = 'none';
