@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title></title>
+  <title>Race Game</title>
   <style>
     /* Global Styles */
     body, html {
@@ -10,69 +10,56 @@
       padding: 0;
       height: 100%;
       font-family: Arial, sans-serif;
-      /* Updated background image URL for main page */
-      background: url('https://imgur.com/2Eeoldo.png'); /* Replace with your new image URL */
+      background: url('https://imgur.com/2Eeoldo.png') no-repeat center center;
       background-size: cover;
-      background-position: center;
-      background-repeat: no-repeat;
     }
-    button {
-      border: none;
-      cursor: pointer;
-      font-size: 16px;
-      border-radius: 5px;
-    }
+
+    /* Main Screen Styling with content aligned at the top */
     #main-screen {
-  position: relative;
-  height: calc(100vh - 60px); /* full viewport height minus header space */
-  overflow: hidden;
-  color: white;
-  text-align: center;
-  background: url('https://imgur.com/2Eeoldo.jpg') no-repeat center center;
-  background-size: cover;
-}
-    /* Background Image Styling */
+      position: relative;
+      height: 100vh; /* Full viewport height */
+      color: white;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start; /* Align content at the top */
+      align-items: center;
+      padding-top: 20px; /* Adjust this value as needed */
+      overflow: hidden;
+    }
     #bg-video {
       position: absolute;
       top: 0;
       left: 0;
-      min-width: 100%;
-      min-height: 100%;
-      width: auto;
-      height: auto;
-      z-index: 1;
+      width: 100%;
+      height: 100%;
       object-fit: cover;
+      z-index: 1;
     }
-    /* Main Content Over Background */
     .main-content {
       position: relative;
       z-index: 2;
-      top: 50%;
-      transform: translateY(-50%);
-    }
-    .main-content h1 {
-      font-size: 48px;
-      margin-bottom: 20px;
-      text-shadow: 2px 2px 4px #000;
     }
     .main-content button {
+      border: none;
+      cursor: pointer;
+      font-size: 16px;
+      border-radius: 5px;
       padding: 10px 20px;
       margin: 10px;
     }
-    
-    /* Game Screen */
+
+    /* Game Screen Styles (existing) */
     #game-screen {
       display: none;
       padding: 20px;
       text-align: center;
     }
-    /* Caption at Top of Game Screen */
     #game-caption {
       font-size: 28px;
       font-weight: bold;
       margin-bottom: 20px;
     }
-    /* Container for Bet and Race Track */
     #game-container {
       display: flex;
       justify-content: center;
@@ -81,7 +68,6 @@
       max-width: 900px;
       margin: 0 auto;
     }
-    /* Bet Container on Left Side */
     #bet-container {
       width: 100px;
     }
@@ -101,11 +87,9 @@
       background-color: darkred;
       border: 2px solid gold;
     }
-    /* Race Container */
     #race-container {
       flex-grow: 1;
     }
-    /* Race Track with Background Image */
     #race-track {
       position: relative;
       margin: 0 auto;
@@ -113,7 +97,7 @@
       max-width: 800px;
       height: 360px; /* 8 lanes x 45px each */
       border: 2px solid #000;
-      background-image: url('https://imgur.com/V7hmVyi.jpg'); /* Replace with your desired background image */
+      background-image: url('https://imgur.com/V7hmVyi.jpg');
       background-size: cover;
       background-position: center;
       overflow: hidden;
@@ -129,11 +113,9 @@
     .lane:last-child {
       border-bottom: none;
     }
-    /* Highlight the lane of the chosen horse with a light green background */
     .lane.user-bet {
       background-color: lightgreen;
     }
-    /* Horse images: start at 5px from the left */
     .horse {
       position: absolute;
       left: 5px;
@@ -143,13 +125,11 @@
       width: 50px;
       height: auto;
     }
-    /* Highlight the current leader with a gold border */
     .leader {
       border: 2px solid gold;
       border-radius: 50%;
       padding: 2px;
     }
-    /* Start and Finish Lines */
     #start-line {
       position: absolute;
       left: 0;
@@ -166,7 +146,6 @@
       width: 2px;
       background: black;
     }
-    /* Popup for Winner Congratulation */
     #popup {
       position: fixed;
       top: 0;
@@ -199,7 +178,6 @@
       font-size: 20px;
       cursor: pointer;
     }
-    /* Race Control Buttons */
     #begin-race, #reset-button {
       margin-top: 20px;
       padding: 10px 30px;
@@ -215,14 +193,13 @@
   </style>
 </head>
 <body>
-
   <!-- Main Screen with Background Image -->
   <div id="main-screen">
     <img id="bg-video" src="https://imgur.com/2Eeoldo.png" alt="Main Screen Background">
     <div class="main-content">
       <button id="connect-wallet" style="background-color: green; color: white;">Connect Wallet</button>
       <br><br>
-      <button id="go-to-game" style="background-color: red; color: white;">Let's RACE!</button>
+      <button id="go-to-game" style="background-color: red; color: white;">Let's Play!</button>
     </div>
   </div>
 
@@ -310,17 +287,15 @@
 
   <script>
     // -------- Global Variables --------
-    let userBet = null;          // Stores the chosen horse number (as a string)
-    let raceInterval;            // Reference for the race interval timer
-    const raceDuration = 120 * 1000; // Race duration set to 1 minute (60,000 ms)
+    let userBet = null;
+    let raceInterval;
+    const raceDuration = 120 * 1000; // 2 minutes
     let raceStartTime;
-    let horses = [];             // Holds each horse's current left position (in pixels)
-    const initialPosition = 5;   // Horses will start (or be reset) at 5px
-
-    // Grab the finish line element for reference
+    let horses = [];
+    const initialPosition = 5;
     const finishLine = document.getElementById('finish-line');
 
-    // -------- Main Screen Transition --------
+    // Transition from Main Screen to Game Screen
     document.getElementById('go-to-game').addEventListener('click', function() {
       document.getElementById('main-screen').style.display = 'none';
       document.getElementById('game-screen').style.display = 'block';
@@ -331,37 +306,31 @@
       alert('Wallet connected! (Dummy function)');
     });
 
-    // -------- Bet Buttons (in Bet Container) --------
+    // Bet Buttons
     const betButtons = document.querySelectorAll('#bet-container .bet-buttons button');
     betButtons.forEach(btn => {
       btn.addEventListener('click', function() {
         if (userBet === null) {
           userBet = this.getAttribute('data-horse');
-          // Mark the chosen button as selected
           this.classList.add('selected');
-          // Disable all bet buttons so the bet remains fixed
           betButtons.forEach(b => { b.disabled = true; });
-          // (Alert removed as per instruction)
-          // Add a light green highlight to the corresponding lane
           const lane = document.querySelector('.lane[data-lane="' + userBet + '"]');
           if(lane) {
             lane.classList.add('user-bet');
           }
-          // Enable the Start Race button
           document.getElementById('begin-race').disabled = false;
         }
       });
     });
 
-    // -------- Start Race Button --------
+    // Start Race Button
     document.getElementById('begin-race').addEventListener('click', function() {
-      this.disabled = true; // Prevent multiple clicks
+      this.disabled = true;
       startRace();
     });
 
-    // -------- Race Functions --------
+    // Race Functions
     function startRace() {
-      // Initialize positions for all horses at the starting position
       for (let i = 0; i < 8; i++) {
         horses[i] = initialPosition;
         const horseEl = document.getElementById('horse' + i);
@@ -378,15 +347,11 @@
       let raceFinished = false;
       let winner = null;
 
-      // Update each horse's position
       for (let i = 0; i < 8; i++) {
-        // Random increment between 1 and 10 pixels per tick
         let increment = Math.random() * 1 + 1;
         horses[i] += increment;
         const horseEl = document.getElementById('horse' + i);
         horseEl.style.left = horses[i] + 'px';
-
-        // If a horse crosses the finish line, declare it the winner
         if (horses[i] >= finishLine.offsetLeft) {
           raceFinished = true;
           winner = i;
@@ -394,7 +359,6 @@
         }
       }
 
-      // Determine the current leader and highlight it with a gold border
       let leaderIndex = 0;
       let maxDistance = horses[0];
       for (let i = 1; i < 8; i++) {
@@ -408,14 +372,11 @@
       }
       document.getElementById('horse' + leaderIndex).classList.add('leader');
 
-      // End race if a horse crosses the finish line
       if (raceFinished) {
         clearInterval(raceInterval);
         showWinner(winner);
         return;
       }
-
-      // End race if 1 minute has elapsed—award victory to the furthest horse
       if (elapsed >= raceDuration) {
         clearInterval(raceInterval);
         let furthest = initialPosition;
@@ -429,58 +390,45 @@
       }
     }
 
-    // Display the popup with the winning message and confetti
     function showWinner(winner) {
       const winnerMessage = document.getElementById('winner-message');
       const popupImage = document.querySelector('#popup-content img');
       let message = 'Wolf ' + (winner + 1) + ' wins!';
-      
       if (userBet !== null) {
         if (parseInt(userBet) === winner) {
-          // Winner message: palitan ang text dito ayon sa gusto mo
-          message += 'You Won!! you got 5X!';
-          // Palitan ang image URL kung gusto mo
+          message += ' You Won!! you got 5X!';
           popupImage.src = "https://imgur.com/Jwem616.png"; 
         } else {
-          // Loser message: palitan ang text dito ayon sa gusto mo
-          message += 'Let us Try again!! ill give you another 10 points!';
-          // Palitan ang image URL kung gusto mo
+          message += ' Let us Try again!! ill give you another 10 points!';
           popupImage.src = "https://imgur.com/ZnsszDZ.png";
         }
       }
-      
       winnerMessage.textContent = message;
       document.getElementById('popup').style.display = 'flex';
       document.getElementById('reset-button').style.display = 'inline-block';
     }
-    // Close the popup when the X is clicked
+
     document.getElementById('close-popup').addEventListener('click', function() {
       document.getElementById('popup').style.display = 'none';
     });
 
-    // -------- Reset Button --------
     document.getElementById('reset-button').addEventListener('click', function() {
       clearInterval(raceInterval);
-      // Reset the bet status as well:
       userBet = null;
-      // Re-enable bet buttons and remove the selected style from each
       betButtons.forEach(b => {
         b.disabled = false;
         b.classList.remove('selected');
       });
-      // Remove the light green highlight from all lanes
       const lanes = document.querySelectorAll('.lane');
       lanes.forEach(lane => {
         lane.classList.remove('user-bet');
       });
-      // Reset horse positions to 5px and remove any leader highlight
       for (let i = 0; i < 8; i++) {
         horses[i] = initialPosition;
         const horseEl = document.getElementById('horse' + i);
         horseEl.style.left = horses[i] + 'px';
         horseEl.classList.remove('leader');
       }
-      // Disable the Start Race button until a new bet is placed
       document.getElementById('begin-race').disabled = true;
       document.getElementById('popup').style.display = 'none';
       document.getElementById('reset-button').style.display = 'none';
